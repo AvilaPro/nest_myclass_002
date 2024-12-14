@@ -1,12 +1,18 @@
 import { Controller, Get, Post, Body, Param, Delete, Res, HttpStatus, Put, Query, NotFoundException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+// import { UpdateProductDto } from './dto/update-product.dto';
+//13.5.2 importar el decordar de Roles
+import { Roles } from "src/decorators";
+//13.5.3 importar el enum de los roles
+import { Role } from "src/rol.enum";
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  //13.5.5 Decoramos la ruta de post que permite crear un producto para que solo un usuario con el rol admin pueda utilizar esta ruta del servidor
+  @Roles(Role.Admin)
   @Post()
   async create(@Res() res, @Body() createProductDto: CreateProductDto) {
     const productoCreado = await this.productsService.create(createProductDto);
@@ -16,6 +22,8 @@ export class ProductsController {
     })
   }
 
+  //13.5.4 Decoramos con el decorador Roles a la ruta get de todo los produsctos y configuramos que todos los roles puedan tener acceso.
+  @Roles(Role.Admin, Role.User)
   @Get()
   async findAll(@Res() res) {
     const productos = await this.productsService.findAll();

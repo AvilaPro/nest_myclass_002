@@ -4,6 +4,7 @@ import { ProductsController } from './products.controller';
 
 import { MongooseModule } from "@nestjs/mongoose";
 import { ProductSchema } from "./schemas/product.schema";
+import { RolesGuard } from 'src/guards/roles/roles.guard';
 
 @Module({
   imports: [

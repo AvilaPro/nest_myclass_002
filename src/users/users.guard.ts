@@ -6,6 +6,10 @@ import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 //11.11 importar las constantes del resoucer de User para acceder a la firma del jwt
 import { jwtConstant } from "./constants";
+//12.3.1 importar el decorador
+import { IS_PUBLIC_KEY } from "../decorators";
+//12.3.2 importar la clase Reflector desde nestjs/core
+import { Reflector } from "@nestjs/core";
 
 
 @Injectable()
@@ -13,7 +17,9 @@ export class UsersGuard implements CanActivate {
   //11.9 crear el constructor
   constructor(
     //11.10 instanciar el servicio de jwt
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    //12.3.3 instanciar a Reflector
+    private reflector: Reflector,
   ) {}
 
   //11.4 Creacion del metodo que extrae el token del request
@@ -25,6 +31,13 @@ export class UsersGuard implements CanActivate {
   async canActivate(
     context: ExecutionContext,
   ): Promise<boolean> {
+    //12.3.4 verificamos que la ruta tenga la marca Public, de lo contrario continua la validacion en este Guardian
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) return true;
+
     //11.2 obtener el request de la peticion
     const request = context.switchToHttp().getRequest();
     //11.5 obtener el token de la peticion

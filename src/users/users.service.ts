@@ -49,7 +49,13 @@ export class UsersService {
       const esValidaContrasena = await bcrypt.compare(password, user.password);
       if (esValidaContrasena) {
         //10.7 crear el payload
-        const payload = { email: user.email, sub: user._id, name: user.name };
+        const payload = { 
+          email: user.email, 
+          sub: user._id, 
+          name: user.name,
+          // 13.4.1 agregar pasar la informacion del role
+          roles: user.role
+        };
         //10.8 firmar el token
         return { access_token: await this.jwtService.signAsync(payload) };
       }else{
